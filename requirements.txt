@@ -1,0 +1,6 @@
+# AgentSynth core dependencies (Python 3.10+)
+pydantic>=2.0
+litellm>=0.1.200
+tenacity>=8.0
+rich>=13.0
+click>=8.0
