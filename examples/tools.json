@@ -1,0 +1,16 @@
+[
+  {
+    "name": "search",
+    "description": "Search for products by query",
+    "parameters": [
+      {"name": "q", "type": "string", "description": "Search query", "required": true}
+    ]
+  },
+  {
+    "name": "get_detail",
+    "description": "Get product detail by id",
+    "parameters": [
+      {"name": "id", "type": "string", "description": "Product id", "required": true}
+    ]
+  }
+]
