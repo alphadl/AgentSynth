@@ -37,6 +37,8 @@ def _parse_trajectory(raw: str | None) -> list[AgentStep]:
         if raw.startswith("json"):
             raw = raw[4:]
     data = json.loads(raw)
+    if not isinstance(data, list):
+        return []
     steps = []
     for i, obj in enumerate(data):
         if not isinstance(obj, dict):
