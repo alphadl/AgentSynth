@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: AgentSynth
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Ding
+    given-names: Liang
+url: https://github.com/alphadl/AgentSynth
+repository-code: https://github.com/alphadl/AgentSynth
+license: Apache-2.0
+date-released: "2025-02-25"

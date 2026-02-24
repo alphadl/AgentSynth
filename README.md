@@ -1,6 +1,12 @@
 # AgentSynth
 
-A pipeline for synthesizing high-quality agent training data from scratch. It focuses on **cold start** and **data scarcity** in tool-using agent scenarios: instead of mining value from existing logs, AgentSynth generates SFT-style trajectories (user intent → reasoning + tool calls) and validates them with execution-based reject sampling.
+A pipeline for synthesizing high-quality agent training data from scratch.
+
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#citation">Citation</a>
+</p> It focuses on **cold start** and **data scarcity** in tool-using agent scenarios: instead of mining value from existing logs, AgentSynth generates SFT-style trajectories (user intent → reasoning + tool calls) and validates them with execution-based reject sampling.
 
 ## Design principles
 
@@ -57,6 +63,17 @@ AgentSynth/
 - **click**, **rich** — CLI
 
 Optional: `datasets` for HuggingFace dataset I/O. See `pyproject.toml` for dev tools (pytest, ruff, mypy).
+
+## Citation
+
+```bibtex
+@software{agentsynth2025,
+  title   = {AgentSynth: Industrial-Grade Agent Data Synthesis Pipeline},
+  author  = {Ding, Liang},
+  year    = {2025},
+  url     = {https://github.com/alphadl/AgentSynth},
+}
+```
 
 ## License
 
