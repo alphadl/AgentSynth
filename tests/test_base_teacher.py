@@ -24,7 +24,7 @@ def test_base_teacher_parse_trajectory(mock_litellm: MagicMock) -> None:
         MagicMock(message=MagicMock(content=json.dumps(trajectory_json)))
     ]
     teacher = BaseTeacher(model="gpt-4o", temperature=0.0)
-    tools = [ToolDefinition("search", "Search", [ToolParameter("q", "string", "Query", True)])]
+    tools = [ToolDefinition(name="search", description="Search", parameters=[ToolParameter(name="q", type="string", description="Query", required=True)])]
     pair = teacher.generate("Find screws", tools, sample_id="test-1")
     assert pair.id == "test-1"
     assert pair.source_method == "forward_teacher"

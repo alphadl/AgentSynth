@@ -22,7 +22,7 @@ def test_dummy_registry() -> None:
 
 def test_validate_trajectory_ok() -> None:
     reg = DummyToolRegistry([
-        ToolDefinition("search", "Search", [ToolParameter("q", "string", "Query", True)]),
+        ToolDefinition(name="search", description="Search", parameters=[ToolParameter(name="q", type="string", description="Query", required=True)]),
     ])
     trajectory = [
         AgentStep(step_index=1, role="user", content="Hi"),
@@ -40,7 +40,7 @@ def test_validate_trajectory_ok() -> None:
 
 def test_validate_trajectory_unknown_tool() -> None:
     reg = DummyToolRegistry([
-        ToolDefinition("search", "Search", []),
+        ToolDefinition(name="search", description="Search", parameters=[]),
     ])
     trajectory = [
         AgentStep(
@@ -57,7 +57,7 @@ def test_validate_trajectory_unknown_tool() -> None:
 
 def test_validate_trajectory_invalid_arg() -> None:
     reg = DummyToolRegistry([
-        ToolDefinition("search", "Search", [ToolParameter("q", "string", "Query", True)]),
+        ToolDefinition(name="search", description="Search", parameters=[ToolParameter(name="q", type="string", description="Query", required=True)]),
     ])
     trajectory = [
         AgentStep(

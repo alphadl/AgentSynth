@@ -6,8 +6,8 @@ from agentsynth.generators import build_chains
 
 def test_build_chains_basic() -> None:
     tools = [
-        ToolDefinition("search", "Search", [ToolParameter("q", "string", "Query", True)]),
-        ToolDefinition("get_detail", "Detail", [ToolParameter("id", "string", "ID", True)]),
+        ToolDefinition(name="search", description="Search", parameters=[ToolParameter(name="q", type="string", description="Query", required=True)]),
+        ToolDefinition(name="get_detail", description="Detail", parameters=[ToolParameter(name="id", type="string", description="ID", required=True)]),
     ]
     chains = build_chains(tools, max_length=2, num_chains=2, shuffle=False)
     assert len(chains) == 2
