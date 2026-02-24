@@ -1,6 +1,7 @@
 """CLI entry point for AgentSynth."""
 
 import json
+import sys
 from pathlib import Path
 
 import click
@@ -17,10 +18,21 @@ def main() -> None:
 
 
 def _load_tools(path: Path) -> list[ToolDefinition]:
-    data = json.loads(path.read_text(encoding="utf-8"))
-    if isinstance(data, list):
-        return [ToolDefinition.model_validate(t) for t in data]
-    return [ToolDefinition.model_validate(data)]
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        click.echo(f"Invalid JSON in {path}: {e}", err=True)
+        sys.exit(1)
+    except OSError as e:
+        click.echo(f"Cannot read {path}: {e}", err=True)
+        sys.exit(1)
+    try:
+        if isinstance(data, list):
+            return [ToolDefinition.model_validate(t) for t in data]
+        return [ToolDefinition.model_validate(data)]
+    except Exception as e:
+        click.echo(f"Invalid tool schema in {path}: {e}", err=True)
+        sys.exit(1)
 
 
 @main.command()
@@ -64,4 +76,6 @@ def run(
     accepted = [p for p in pairs if p.execution_success]
     if accepted:
         pipeline.save_jsonl(accepted, output)
-    click.echo(f"Generated {len(pairs)}, accepted {len(accepted)}, saved to {output}")
+        click.echo(f"Generated {len(pairs)}, accepted {len(accepted)}, saved to {output}")
+    else:
+        click.echo(f"Generated {len(pairs)}, accepted 0 (no samples written to {output})")
