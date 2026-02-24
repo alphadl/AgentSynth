@@ -6,7 +6,9 @@ A pipeline for synthesizing high-quality agent training data from scratch.
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
   <a href="#citation">Citation</a>
-</p> It focuses on **cold start** and **data scarcity** in tool-using agent scenarios: instead of mining value from existing logs, AgentSynth generates SFT-style trajectories (user intent → reasoning + tool calls) and validates them with execution-based reject sampling.
+</p>
+
+It targets **cold start** and **data scarcity** in tool-using agent scenarios: instead of mining value from existing logs, AgentSynth generates SFT-style trajectories (user intent → reasoning + tool calls) and validates them with execution-based reject sampling.
 
 ## Design principles
 
@@ -38,8 +40,12 @@ Requires **Python 3.10+**. See `pyproject.toml` and `requirements.txt` for depen
 
 ```bash
 agentsynth --help
-agentsynth run   # full pipeline (placeholder until Phase 4)
+agentsynth run -t examples/tools.json -o out.jsonl --mode back -n 2
 ```
+
+**Back-translation** (tool chain → user prompt): provide a JSON file of tool definitions; the pipeline builds valid chains, back-translates each to a user query, validates, and writes accepted samples to JSONL.
+
+**Forward** (scenario → trajectory): use `--mode forward` and `--scenarios <file>` (JSON array or one scenario per line).
 
 ## Project layout
 
@@ -50,6 +56,7 @@ AgentSynth/
 │   ├── teachers/       # Forward teachers and back-translator
 │   ├── execution/      # Sandbox and trajectory validation
 │   └── generators/     # Tool-chain builder
+├── examples/           # Example tools.json for runnable demo
 ├── tests/
 ├── pyproject.toml
 └── README.md
