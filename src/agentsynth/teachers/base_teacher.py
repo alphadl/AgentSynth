@@ -6,12 +6,7 @@ import json
 import logging
 import uuid
 
-from agentsynth.core.types import (
-    AgentStep,
-    GenerationConfig,
-    SynthesizedDataPair,
-    ToolDefinition,
-)
+from agentsynth.core.types import AgentStep, SynthesizedDataPair, ToolDefinition
 from agentsynth.teachers.prompts import FORWARD_TEACHER_SYSTEM
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
@@ -31,11 +26,14 @@ def _tools_to_text(tools: list[ToolDefinition]) -> str:
     return "\n".join(lines)
 
 
-def _parse_trajectory(raw: str) -> list[AgentStep]:
+def _parse_trajectory(raw: str | None) -> list[AgentStep]:
     """Parse LLM JSON output into list of AgentStep."""
+    if not raw or not raw.strip():
+        return []
     raw = raw.strip()
     if raw.startswith("```"):
-        raw = raw.split("```")[1]
+        parts = raw.split("```")
+        raw = parts[1] if len(parts) > 1 else raw
         if raw.startswith("json"):
             raw = raw[4:]
     data = json.loads(raw)
@@ -102,7 +100,9 @@ class BaseTeacher:
             temperature=self.temperature,
             max_tokens=4096,
         )
-        content = response.choices[0].message.content  # type: ignore[union-attr]
+        if not response.choices:
+            raise ValueError("LLM returned no choices")
+        content = getattr(response.choices[0].message, "content", None)
         trajectory = _parse_trajectory(content)
         if not trajectory:
             trajectory = [

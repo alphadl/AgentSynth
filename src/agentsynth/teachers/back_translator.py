@@ -31,16 +31,20 @@ def _chain_to_text(chain: list[dict]) -> str:
 
 
 def _chain_to_trajectory(chain: list[dict]) -> list[AgentStep]:
-    """Turn a tool chain into a minimal trajectory (user + assistant steps with tool_calls + tool obs)."""
+    """Turn a tool chain into a minimal trajectory (assistant steps with tool_calls + tool obs)."""
     steps = []
     for i, call in enumerate(chain):
+        if not isinstance(call, dict):
+            continue
+        name = call.get("name") or "unknown"
+        args = call.get("arguments") if isinstance(call.get("arguments"), dict) else {}
         step_idx = 2 * i + 1
         steps.append(
             AgentStep(
                 step_index=step_idx,
                 role="assistant",
-                content=f"Calling {call.get('name', '?')}.",
-                tool_calls=[{"name": call.get("name", ""), "arguments": call.get("arguments") or {}}],
+                content=f"Calling {name}.",
+                tool_calls=[{"name": name, "arguments": args}],
             )
         )
         steps.append(
@@ -86,7 +90,9 @@ class BackTranslator:
             temperature=self.temperature,
             max_tokens=1024,
         )
-        content = response.choices[0].message.content  # type: ignore[union-attr]
+        if not response.choices:
+            raise ValueError("LLM returned no choices")
+        content = getattr(response.choices[0].message, "content", None)
         user_prompt = (content or "").strip().strip('"')
         trajectory = _chain_to_trajectory(tool_chain)
         return SynthesizedDataPair(
