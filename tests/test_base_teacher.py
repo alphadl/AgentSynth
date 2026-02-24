@@ -7,6 +7,15 @@ import pytest
 
 from agentsynth.core.types import ToolDefinition, ToolParameter
 from agentsynth.teachers import BaseTeacher
+from agentsynth.teachers.base_teacher import _parse_trajectory
+
+
+def test_parse_trajectory_empty_or_invalid() -> None:
+    assert _parse_trajectory(None) == []
+    assert _parse_trajectory("") == []
+    assert _parse_trajectory("  ") == []
+    assert _parse_trajectory("{}") == []
+    assert _parse_trajectory("[]") == []
 
 
 @pytest.fixture
