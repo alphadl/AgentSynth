@@ -5,6 +5,7 @@ A pipeline for synthesizing high-quality agent training data from scratch.
 <p align="center">
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
+  <a href="#related-projects">Related projects</a> •
   <a href="#citation">Citation</a>
 </p>
 
@@ -70,6 +71,12 @@ AgentSynth/
 - **click**, **rich** — CLI
 
 Optional: `datasets` for HuggingFace dataset I/O. See `pyproject.toml` for dev tools (pytest, ruff, mypy).
+
+## Related projects
+
+- **[AdaRubrics](https://github.com/alphadl/AdaRubrics)** — Adaptive dynamic rubric evaluator for agent trajectories: generates task-specific dimensions and scores runs for filtering/RLHF. Use it to score and filter AgentSynth's synthesized trajectories before training or deployment.
+- **[AgentHER](https://github.com/alphadl/AgentHER)** — Hindsight Experience Replay for LLM agents: relabel failed trajectories into valid training data (SFT/DPO). Complements AgentSynth when you have existing failed runs to recover instead of synthesizing from scratch.
+- **[trajectory_tokenization](https://github.com/alphadl/trajectory_tokenization)** — ReAct with trajectory tokenization: compresses long (Thought, Action, Observation) history so long-horizon runs fit in context. Addresses context length; AgentSynth addresses *data generation*.
 
 ## Citation
 
