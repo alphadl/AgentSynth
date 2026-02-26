@@ -1,5 +1,7 @@
 # AgentSynth
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 A pipeline for synthesizing high-quality agent training data from scratch.
 
 <p align="center">
@@ -91,4 +93,4 @@ Optional: `datasets` for HuggingFace dataset I/O. See `pyproject.toml` for dev t
 
 ## License
 
-Apache-2.0.
+Apache 2.0
