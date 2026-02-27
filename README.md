@@ -1,8 +1,12 @@
 # AgentSynth
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<p align="center">
+  <img src="assets/logo.jpg" width="220" alt="AgentSynth Logo" />
+</p>
 
-A pipeline for synthesizing high-quality agent training data from scratch.
+<p align="center">
+  <em>Synthetic agent training data from scratch — forward synthesis & back-translation</em>
+</p>
 
 <p align="center">
   <a href="#installation">Installation</a> •
@@ -11,7 +15,9 @@ A pipeline for synthesizing high-quality agent training data from scratch.
   <a href="#citation">Citation</a>
 </p>
 
-It targets **cold start** and **data scarcity** in tool-using agent scenarios: instead of mining value from existing logs, AgentSynth generates SFT-style trajectories (user intent → reasoning + tool calls) and validates them with execution-based reject sampling.
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+A pipeline for synthesizing high-quality agent training data from scratch. It targets **cold start** and **data scarcity** in tool-using agent scenarios: instead of mining value from existing logs, AgentSynth generates SFT-style trajectories (user intent → reasoning + tool calls) and validates them with execution-based reject sampling.
 
 ## Design principles
 
