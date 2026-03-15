@@ -7,16 +7,15 @@ name = "agentsynth"
 version = "0.1.0"
 description = "Industrial-Grade Agent Data Synthesis Pipeline — synthetic SFT trajectories via Multi-Teacher Forward Synthesis and Back-Translation"
 readme = "README.md"
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [
-    {name = "AgentSynth Contributors"},
+    {name = "Liang Ding", email = "liangding.liam@gmail.com"},
 ]
 keywords = ["llm", "agent", "data-synthesis", "sft", "back-translation", "reject-sampling"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -41,6 +40,11 @@ dev = [
     "mypy>=1.0",
 ]
 datasets = ["datasets>=2.0"]
+
+[project.urls]
+Homepage = "https://github.com/alphadl/AgentSynth"
+Repository = "https://github.com/alphadl/AgentSynth"
+Issues = "https://github.com/alphadl/AgentSynth/issues"
 
 [project.scripts]
 agentsynth = "agentsynth.cli:main"
