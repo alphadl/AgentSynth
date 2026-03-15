@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 from typing import Any
 
-from agentsynth.core.types import ToolDefinition, ToolParameter
+from agentsynth.core.types import ToolDefinition
 
 
 def _sample_args_for_tool(tool: ToolDefinition) -> dict[str, Any]:
@@ -28,6 +28,7 @@ def build_chains(
     max_length: int = 5,
     num_chains: int = 1,
     shuffle: bool = True,
+    seed: int | None = None,
 ) -> list[list[dict[str, Any]]]:
     """Build valid tool-call sequences from tool definitions.
 
@@ -36,22 +37,25 @@ def build_chains(
 
     Args:
         tools: Available tool definitions.
-        max_length: Max steps per chain.
+        max_length: Max steps per chain. Capped by the number of distinct tools
+            because each tool appears at most once per chain.
         num_chains: Number of chains to generate.
         shuffle: If True, randomize tool order per chain.
+        seed: Optional RNG seed for reproducibility. If None, uses global state.
 
     Returns:
         List of chains; each chain is a list of tool-call dicts.
     """
     if not tools:
         return []
+    rng = random.Random(seed)
     names = [t.name for t in tools]
     by_name = {t.name: t for t in tools}
     chains: list[list[dict[str, Any]]] = []
     for _ in range(num_chains):
         order = names.copy()
         if shuffle:
-            random.shuffle(order)
+            rng.shuffle(order)
         length = min(max_length, len(order))
         chain = []
         for name in order[:length]:

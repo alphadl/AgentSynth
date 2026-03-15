@@ -36,10 +36,29 @@ def _load_tools(path: Path) -> list[ToolDefinition]:
 
 
 @main.command()
-@click.option("--tools", "-t", type=click.Path(path_type=Path, exists=True), required=True, help="JSON file of tool definitions.")
-@click.option("--output", "-o", type=click.Path(path_type=Path), required=True, help="Output JSONL path.")
-@click.option("--mode", type=click.Choice(["forward", "back"]), default="back", help="forward = scenario -> trajectory; back = chain -> prompt.")
-@click.option("--scenarios", type=click.Path(path_type=Path, exists=True), help="JSON/JSONL of scenarios (for forward mode).")
+@click.option(
+    "--tools", "-t",
+    type=click.Path(path_type=Path, exists=True),
+    required=True,
+    help="JSON file of tool definitions.",
+)
+@click.option(
+    "--output", "-o",
+    type=click.Path(path_type=Path),
+    required=True,
+    help="Output JSONL path.",
+)
+@click.option(
+    "--mode",
+    type=click.Choice(["forward", "back"]),
+    default="back",
+    help="forward = scenario -> trajectory; back = chain -> prompt.",
+)
+@click.option(
+    "--scenarios",
+    type=click.Path(path_type=Path, exists=True),
+    help="JSON/JSONL of scenarios (for forward mode).",
+)
 @click.option("--num-samples", "-n", default=1, help="Number of samples (back mode).")
 @click.option("--model", default=None, help="Override model (e.g. gpt-4o).")
 def run(
@@ -67,6 +86,9 @@ def run(
             scenario_list = json.loads(text)
         except json.JSONDecodeError:
             scenario_list = [line.strip() for line in text.splitlines() if line.strip()]
+        if isinstance(scenario_list, dict):
+            click.echo("--scenarios must be a JSON array or JSONL, not an object.", err=True)
+            raise SystemExit(1)
         if isinstance(scenario_list, str):
             scenario_list = [scenario_list]
         pairs = [pipeline.run_forward(s) for s in scenario_list]

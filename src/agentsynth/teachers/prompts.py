@@ -16,7 +16,8 @@ Output your response as a JSON array of steps. Each step is an object with:
 - "content": string (your thought text, or user message, or tool output)
 - "tool_calls": optional array of {"name": "<tool_name>", "arguments": {<key>: <value>}}
 
-For assistant steps that call tools, include "tool_calls". For tool steps, "content" is the observation.
+For assistant steps that call tools, include "tool_calls".
+For tool steps, "content" is the observation.
 Return only the JSON array, no markdown fences."""
 
 BACK_TRANSLATOR_SYSTEM = """You are an expert at reverse-engineering user intent.
@@ -26,6 +27,7 @@ The sequence is provided below.
 Please generate a User Query that:
 1. Is realistic and specific (e.g., includes specific constraints like price, location, color).
 2. Is complex enough to justify ALL the steps in the history (not just the first one).
-3. Ambiguity is allowed if the agent had to clarify, but generally, assume the user was goal-oriented.
+3. Ambiguity is allowed if the agent had to clarify, but generally assume
+   the user was goal-oriented.
 
 Output format: Just the user query string, nothing else."""

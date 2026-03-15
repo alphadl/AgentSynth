@@ -5,12 +5,13 @@ from __future__ import annotations
 import logging
 import uuid
 
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+
 from agentsynth.core.types import (
     AgentStep,
     SynthesizedDataPair,
 )
 from agentsynth.teachers.prompts import BACK_TRANSLATOR_SYSTEM
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
@@ -75,12 +76,15 @@ class BackTranslator:
         tool_chain: list[dict],
         sample_id: str | None = None,
     ) -> SynthesizedDataPair:
-        """Generate user_prompt from tool_chain; trajectory is derived from chain + mock observations."""
+        """Generate user_prompt from tool_chain; trajectory derived from chain + mock obs."""
         if litellm is None:
             raise ImportError("litellm is required for BackTranslator. pip install litellm")
         sample_id = sample_id or uuid.uuid4().hex[:12]
         history_text = _chain_to_text(tool_chain)
-        user_msg = f"Tool execution history:\n{history_text}\n\nGenerate the user query that would have led to this exact sequence."
+        user_msg = (
+            f"Tool execution history:\n{history_text}\n\n"
+            "Generate the user query that would have led to this exact sequence."
+        )
         response = litellm.completion(
             model=self.model,
             messages=[
@@ -94,6 +98,8 @@ class BackTranslator:
             raise ValueError("LLM returned no choices")
         content = getattr(response.choices[0].message, "content", None)
         user_prompt = (content or "").strip().strip('"')
+        if not user_prompt:
+            raise ValueError("LLM returned empty user_prompt")
         trajectory = _chain_to_trajectory(tool_chain)
         return SynthesizedDataPair(
             id=sample_id,

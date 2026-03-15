@@ -1,6 +1,5 @@
 """Tests for execution sandbox and validate_trajectory."""
 
-import pytest
 
 from agentsynth.core.types import AgentStep, ToolDefinition, ToolParameter
 from agentsynth.execution import DummyToolRegistry, validate_trajectory
@@ -22,7 +21,11 @@ def test_dummy_registry() -> None:
 
 def test_validate_trajectory_ok() -> None:
     reg = DummyToolRegistry([
-        ToolDefinition(name="search", description="Search", parameters=[ToolParameter(name="q", type="string", description="Query", required=True)]),
+        ToolDefinition(
+            name="search",
+            description="Search",
+            parameters=[ToolParameter(name="q", type="string", description="Query", required=True)],
+        ),
     ])
     trajectory = [
         AgentStep(step_index=1, role="user", content="Hi"),
@@ -57,7 +60,11 @@ def test_validate_trajectory_unknown_tool() -> None:
 
 def test_validate_trajectory_invalid_arg() -> None:
     reg = DummyToolRegistry([
-        ToolDefinition(name="search", description="Search", parameters=[ToolParameter(name="q", type="string", description="Query", required=True)]),
+        ToolDefinition(
+            name="search",
+            description="Search",
+            parameters=[ToolParameter(name="q", type="string", description="Query", required=True)],
+        ),
     ])
     trajectory = [
         AgentStep(
@@ -70,3 +77,24 @@ def test_validate_trajectory_invalid_arg() -> None:
     ok, errs = validate_trajectory(trajectory, reg)
     assert ok is False
     assert any("no parameter" in e for e in errs)
+
+
+def test_validate_trajectory_missing_required() -> None:
+    reg = DummyToolRegistry([
+        ToolDefinition(
+            name="search",
+            description="Search",
+            parameters=[ToolParameter(name="q", type="string", description="Query", required=True)],
+        ),
+    ])
+    trajectory = [
+        AgentStep(
+            step_index=1,
+            role="assistant",
+            content="x",
+            tool_calls=[{"name": "search", "arguments": {}}],  # missing required "q"
+        ),
+    ]
+    ok, errs = validate_trajectory(trajectory, reg)
+    assert ok is False
+    assert any("missing required" in e for e in errs)

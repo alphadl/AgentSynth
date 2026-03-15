@@ -81,6 +81,7 @@ def validate_trajectory(
             for p in tool.parameters:
                 if p.required and p.name not in args:
                     errors.append(
-                        f"Step {step.step_index} call {i}: tool '{name}' missing required '{p.name}'"
+                        f"Step {step.step_index} call {i}: "
+                        f"tool '{name}' missing required '{p.name}'"
                     )
     return (len(errors) == 0, errors)

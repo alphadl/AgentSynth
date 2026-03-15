@@ -10,7 +10,6 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-
 # --- Tool Definitions ---
 
 
@@ -43,7 +42,9 @@ class AgentStep(BaseModel):
     step_index: int = Field(..., description="Order of this step in the trajectory")
     role: Literal["assistant", "user", "tool"] = Field(
         ...,
-        description="Who produced this step: assistant (CoT + tool_calls), user, or tool (observation)",
+        description=(
+            "Who produced this step: assistant (CoT + tool_calls), user, or tool (observation)"
+        ),
     )
     content: str = Field(
         ...,

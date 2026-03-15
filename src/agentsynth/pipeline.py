@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 
@@ -39,10 +38,7 @@ class Pipeline:
         tools_list = [t for t in tools_list if t is not None]
         pair = teacher.generate(scenario, tools_list, None)
         ok, _ = validate_trajectory(pair.trajectory, self.registry)
-        return SynthesizedDataPair(
-            **pair.model_dump(),
-            execution_success=ok,
-        )
+        return pair.model_copy(update={"execution_success": ok})
 
     def run_back_translation(self, num_samples: int = 1) -> list[SynthesizedDataPair]:
         """Generate chains, back-translate each, validate, return with execution_success set."""
@@ -50,18 +46,20 @@ class Pipeline:
         tools_list = [t for t in tools_list if t is not None]
         if not tools_list:
             return []
-        chains = build_chains(tools_list, max_length=min(5, self.config.max_steps), num_chains=num_samples)
-        bt = BackTranslator(model=self.config.back_translation_model, temperature=self.config.temperature)
+        chains = build_chains(
+            tools_list,
+            max_length=min(5, self.config.max_steps),
+            num_chains=num_samples,
+        )
+        bt = BackTranslator(
+            model=self.config.back_translation_model,
+            temperature=self.config.temperature,
+        )
         results = []
         for chain in chains:
             pair = bt.generate(chain, None)
             ok, _ = validate_trajectory(pair.trajectory, self.registry)
-            results.append(
-                SynthesizedDataPair(
-                    **pair.model_dump(),
-                    execution_success=ok,
-                )
-            )
+            results.append(pair.model_copy(update={"execution_success": ok}))
         return results
 
     def save_jsonl(self, pairs: list[SynthesizedDataPair], path: str | Path) -> None:

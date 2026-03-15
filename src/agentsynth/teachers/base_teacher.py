@@ -6,9 +6,10 @@ import json
 import logging
 import uuid
 
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+
 from agentsynth.core.types import AgentStep, SynthesizedDataPair, ToolDefinition
 from agentsynth.teachers.prompts import FORWARD_TEACHER_SYSTEM
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def _tools_to_text(tools: list[ToolDefinition]) -> str:
 
 
 def _parse_trajectory(raw: str | None) -> list[AgentStep]:
-    """Parse LLM JSON output into list of AgentStep."""
+    """Parse LLM JSON output into list of AgentStep. Returns [] on any parse failure."""
     if not raw or not raw.strip():
         return []
     raw = raw.strip()
@@ -36,7 +37,10 @@ def _parse_trajectory(raw: str | None) -> list[AgentStep]:
         raw = parts[1] if len(parts) > 1 else raw
         if raw.startswith("json"):
             raw = raw[4:]
-    data = json.loads(raw)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return []
     if not isinstance(data, list):
         return []
     steps = []
@@ -78,7 +82,7 @@ class BaseTeacher:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(min=1, max=10),
-        retry=retry_if_exception_type((json.JSONDecodeError, ValueError)),
+        retry=retry_if_exception_type(ValueError),
         reraise=True,
     )
     def generate(
@@ -87,12 +91,15 @@ class BaseTeacher:
         tools: list[ToolDefinition],
         sample_id: str | None = None,
     ) -> SynthesizedDataPair:
-        """Generate one (user_prompt, trajectory) pair. execution_success left False (set by validator)."""
+        """Generate one (user_prompt, trajectory) pair. execution_success set by validator."""
         if litellm is None:
             raise ImportError("litellm is required for BaseTeacher. pip install litellm")
         sample_id = sample_id or uuid.uuid4().hex[:12]
         tools_text = _tools_to_text(tools)
-        user_msg = f"Scenario:\n{scenario}\n\nAvailable tools:\n{tools_text}\n\nGenerate a trajectory (JSON array of steps)."
+        user_msg = (
+            f"Scenario:\n{scenario}\n\nAvailable tools:\n{tools_text}"
+            "\n\nGenerate a trajectory (JSON array of steps)."
+        )
         response = litellm.completion(
             model=self.model,
             messages=[
@@ -107,10 +114,7 @@ class BaseTeacher:
         content = getattr(response.choices[0].message, "content", None)
         trajectory = _parse_trajectory(content)
         if not trajectory:
-            trajectory = [
-                AgentStep(step_index=1, role="user", content=scenario),
-                AgentStep(step_index=2, role="assistant", content="(parse failed)", tool_calls=None),
-            ]
+            raise ValueError("LLM returned empty or unparseable trajectory")
         return SynthesizedDataPair(
             id=sample_id,
             source_method="forward_teacher",

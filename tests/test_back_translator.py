@@ -18,7 +18,10 @@ def test_back_translator(mock_litellm: MagicMock) -> None:
         MagicMock(message=MagicMock(content="Find screw suppliers and compare prices"))
     ]
     bt = BackTranslator(model="gpt-4o", temperature=0.0)
-    chain = [{"name": "search", "arguments": {"q": "screws"}}, {"name": "get_detail", "arguments": {"id": "1"}}]
+    chain = [
+        {"name": "search", "arguments": {"q": "screws"}},
+        {"name": "get_detail", "arguments": {"id": "1"}},
+    ]
     pair = bt.generate(chain, sample_id="bt-1")
     assert pair.id == "bt-1"
     assert pair.source_method == "back_translation"
@@ -26,3 +29,14 @@ def test_back_translator(mock_litellm: MagicMock) -> None:
     assert len(pair.trajectory) == 4  # 2 assistant + 2 tool steps
     assert pair.trajectory[0].tool_calls is not None
     assert pair.trajectory[0].tool_calls[0]["name"] == "search"
+
+
+def test_back_translator_raises_on_empty_prompt(mock_litellm: MagicMock) -> None:
+    """generate() should raise ValueError when LLM returns an empty user_prompt."""
+    mock_litellm.completion.return_value.choices = [
+        MagicMock(message=MagicMock(content='  "  '))  # only quotes and spaces
+    ]
+    bt = BackTranslator(model="gpt-4o", temperature=0.0)
+    chain = [{"name": "search", "arguments": {"q": "screws"}}]
+    with pytest.raises(ValueError, match="empty user_prompt"):
+        bt.generate(chain, sample_id="bt-empty")
