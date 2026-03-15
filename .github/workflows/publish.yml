@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
-      id-token: write
+      id-token: write  # required for OIDC trusted publisher
     steps:
       - name: Download distributions
         uses: actions/download-artifact@v4
@@ -43,3 +43,7 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Use PYPI_API_TOKEN secret if set, otherwise rely on OIDC trusted publisher.
+          # To use the token: Settings → Secrets → Actions → New secret → PYPI_API_TOKEN
+          password: ${{ secrets.PYPI_API_TOKEN }}
