@@ -12,13 +12,7 @@
   <a href="https://github.com/alphadl/AgentSynth/actions/workflows/ci.yml">
     <img src="https://github.com/alphadl/AgentSynth/actions/workflows/ci.yml/badge.svg" alt="CI" />
   </a>
-  <a href="https://pypi.org/project/agentsynth/">
-    <img src="https://img.shields.io/pypi/v/agentsynth" alt="PyPI" />
-  </a>
-  <a href="https://pypi.org/project/agentsynth/">
-    <img src="https://img.shields.io/pypi/dm/agentsynth" alt="PyPI downloads" />
-  </a>
-  <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+" />
+<img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+" />
   <a href="https://github.com/astral-sh/ruff">
     <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff" />
   </a>
