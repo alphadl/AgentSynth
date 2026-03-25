@@ -102,10 +102,10 @@ Optional: `datasets` for HuggingFace dataset I/O. See `pyproject.toml` for dev t
 ## Citation
 
 ```bibtex
-@software{agentsynth2025,
+@software{agentsynth2026,
   title   = {AgentSynth: Industrial-Grade Agent Data Synthesis Pipeline},
   author  = {Ding, Liang},
-  year    = {2025},
+  year    = {2026},
   url     = {https://github.com/alphadl/AgentSynth},
 }
 ```
